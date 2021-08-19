@@ -15,6 +15,7 @@ from typing import Union
 from .misc import get_formatted_stack_trace
 from .parallelism_framework import InfiniteLoopingParallelismMixIn
 from .queue_utils import SimpleMultiprocessingQueue
+from .queue_utils import TestingQueue
 
 
 # pylint: disable=duplicate-code
@@ -57,7 +58,8 @@ class InfiniteProcess(InfiniteLoopingParallelismMixIn, Process):
         formatted_stack_trace = get_formatted_stack_trace(the_err)
         reporter = self._fatal_error_reporter
         if not isinstance(
-            reporter, (SimpleMultiprocessingQueue, multiprocessing.queues.Queue)
+            reporter,
+            (SimpleMultiprocessingQueue, multiprocessing.queues.Queue, TestingQueue),
         ):
             raise NotImplementedError(
                 "The error reporter for InfiniteProcess must by a SimpleMultiprocessingQueue or multiprocessing.Queue"

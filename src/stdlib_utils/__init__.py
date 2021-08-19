@@ -57,6 +57,7 @@ from .queue_utils import is_queue_eventually_of_size
 from .queue_utils import put_object_into_queue_and_raise_error_if_eventually_still_empty
 from .queue_utils import safe_get
 from .queue_utils import SimpleMultiprocessingQueue
+from .queue_utils import TestingQueue
 from .threading_utils import InfiniteThread
 from .xml import find_exactly_one_xml_element
 
@@ -119,4 +120,5 @@ __all__ = [
     "UnionOfThreadingAndMultiprocessingQueue",
     "QUEUE_CHECK_TIMEOUT_SECONDS",
     "NANOSECONDS_PER_CENTIMILLISECOND",
+    "TestingQueue",
 ]

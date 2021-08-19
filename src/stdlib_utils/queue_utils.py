@@ -6,6 +6,7 @@ stdlib_utils.
 """
 from __future__ import annotations
 
+from collections import deque
 import multiprocessing
 import multiprocessing.queues
 import queue
@@ -180,3 +181,37 @@ class SimpleMultiprocessingQueue(multiprocessing.queues.SimpleQueue):  # type: i
         multiprocessing.Queue interface.
         """
         self.put(obj)
+
+
+# TODO unit test all these methods
+class TestingQueue(deque):  # type: ignore[type-arg]
+    """Queue-like Deque subclass.
+
+    Provides faster operations in place of a real queue, but with the same methods as a queue
+
+    This should only be used in tests where thread/process safety isn't
+    an issue.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+    def qsize(self) -> int:
+        return len(self)
+
+    def empty(self) -> bool:
+        return self.qsize() == 0
+
+    def put(self, item: Any, block: bool = False, timeout: int = 0) -> None:
+        self.append(item)
+
+    def put_nowait(self, item: Any) -> None:
+        self.append(item)
+
+    def get(self, block: bool = False, timeout: int = 0) -> Any:
+        return self.get_nowait()
+
+    def get_nowait(self) -> Any:
+        if self.empty():
+            raise Empty()
+        return self.popleft()
