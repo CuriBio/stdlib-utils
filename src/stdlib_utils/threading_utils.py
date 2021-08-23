@@ -18,7 +18,7 @@ class InfiniteThread(InfiniteLoopingParallelismMixIn, threading.Thread):
     Contains some enhanced functionality for stopping.
 
     Args:
-        fatal_error_reporter: set up as a queue to be thread/process safe. If any error is unhandled during run, it is fed into this queue so that calling thread can know the full details about the problem in this process.
+        fatal_error_reporter: set up as a queue to be thread safe. If any error is unhandled during run, it is fed into this queue so that calling thread can know the full details about the problem in this process.
     """
 
     def __init__(

@@ -183,7 +183,6 @@ class SimpleMultiprocessingQueue(multiprocessing.queues.SimpleQueue):  # type: i
         self.put(obj)
 
 
-# TODO unit test all these methods
 class TestingQueue(deque):  # type: ignore[type-arg]
     """Queue-like Deque subclass.
 
@@ -195,12 +194,6 @@ class TestingQueue(deque):  # type: ignore[type-arg]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-
-    def qsize(self) -> int:
-        return len(self)
-
-    def empty(self) -> bool:
-        return self.qsize() == 0
 
     def put(self, item: Any, block: bool = False, timeout: int = 0) -> None:
         # pylint: disable=unused-argument  # Tanner (8/23/21): This is intentional to make this compatible with code expecting real queues
@@ -217,3 +210,9 @@ class TestingQueue(deque):  # type: ignore[type-arg]
         if self.empty():
             raise Empty()
         return self.popleft()
+
+    def qsize(self) -> int:
+        return len(self)
+
+    def empty(self) -> bool:
+        return self.qsize() == 0

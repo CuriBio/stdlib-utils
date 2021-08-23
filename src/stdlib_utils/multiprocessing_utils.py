@@ -7,6 +7,7 @@ import multiprocessing
 from multiprocessing import Event
 from multiprocessing import Process
 import multiprocessing.queues
+import queue
 from typing import Any
 from typing import Tuple
 from typing import Union
@@ -15,20 +16,16 @@ from .exceptions import BadQueueTypeError
 from .misc import get_formatted_stack_trace
 from .parallelism_framework import InfiniteLoopingParallelismMixIn
 from .queue_utils import SimpleMultiprocessingQueue
-from .queue_utils import TestingQueue
 
 
-# pylint: disable=duplicate-code
 class InfiniteProcess(InfiniteLoopingParallelismMixIn, Process):
     """Process with some enhanced functionality.
 
     Because of the more explict error reporting/handling during the run method, the Process.exitcode value will still be 0 when the process exits after handling an error.
 
     Args:
-        fatal_error_reporter: set up as a queue to be thread/process safe. If any error is unhandled during run, it is fed into this queue so that calling thread can know the full details about the problem in this process.
+        fatal_error_reporter: set up as a queue to be multiprocessing safe. If any error is unhandled during run, it is fed into this queue so that calling thread can know the full details about the problem in this process.
     """
-
-    # pylint: disable=duplicate-code
 
     def __init__(
         self,
@@ -56,15 +53,11 @@ class InfiniteProcess(InfiniteLoopingParallelismMixIn, Process):
 
     def _report_fatal_error(self, the_err: Exception) -> None:
         formatted_stack_trace = get_formatted_stack_trace(the_err)
-        reporter = self._fatal_error_reporter
-        if not isinstance(
-            reporter,
-            (SimpleMultiprocessingQueue, multiprocessing.queues.Queue, TestingQueue),
-        ):
+        if isinstance(self._fatal_error_reporter, queue.Queue):
             raise NotImplementedError(
-                "The error reporter for InfiniteProcess must by a SimpleMultiprocessingQueue or multiprocessing.Queue"
+                "The error reporter for InfiniteProcess cannot be a threading queue"
             )
-        reporter.put_nowait((the_err, formatted_stack_trace))
+        self._fatal_error_reporter.put_nowait((the_err, formatted_stack_trace))
 
     def start(self) -> None:
         if not isinstance(
