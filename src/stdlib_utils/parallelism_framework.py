@@ -80,7 +80,6 @@ class InfiniteLoopingParallelismMixIn:
         self._idle_iteration_time_ns = 0
         self._percent_use_values: List[float] = list()
         self._longest_iterations: List[int] = list()
-        # TODO make sure no queues are TestingQueues when start is called
 
     def _init_performance_measurements(self) -> None:
         # separate to make mocking easier

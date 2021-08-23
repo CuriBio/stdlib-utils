@@ -203,12 +203,14 @@ class TestingQueue(deque):  # type: ignore[type-arg]
         return self.qsize() == 0
 
     def put(self, item: Any, block: bool = False, timeout: int = 0) -> None:
+        # pylint: disable=unused-argument  # Tanner (8/23/21): This is intentional to make this compatible with code expecting real queues
         self.append(item)
 
     def put_nowait(self, item: Any) -> None:
         self.append(item)
 
     def get(self, block: bool = False, timeout: int = 0) -> Any:
+        # pylint: disable=unused-argument  # Tanner (8/23/21): This is intentional to make this compatible with code expecting real queues
         return self.get_nowait()
 
     def get_nowait(self) -> Any:

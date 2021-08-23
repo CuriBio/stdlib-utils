@@ -8,6 +8,7 @@ import threading
 from typing import Optional
 from typing import Union
 
+from .exceptions import BadQueueTypeError
 from .parallelism_framework import InfiniteLoopingParallelismMixIn
 
 
@@ -41,17 +42,9 @@ class InfiniteThread(InfiniteLoopingParallelismMixIn, threading.Thread):
         )
         self._lock = lock
 
-    # pylint: disable=duplicate-code # pylint is freaking out and requiring the method to be redefined
-    def run(  # pylint: disable=duplicate-code # pylint is freaking out and requiring the method to be redefined
-        self,
-        num_iterations: Optional[int] = None,
-        perform_setup_before_loop: bool = True,  # pylint: disable=duplicate-code # pylint is freaking out and requiring the method to be redefined
-        perform_teardown_after_loop: bool = True,
-    ) -> None:  # pylint: disable=duplicate-code # pylint is freaking out and requiring the method to be redefined
-        # For some reason pylint freaks out if this method is only defined in the MixIn https://github.com/PyCQA/pylint/issues/1233
-        # pylint: disable=duplicate-code # pylint is freaking out and requiring the method to be redefined
-        super().run(
-            num_iterations=num_iterations,
-            perform_setup_before_loop=perform_setup_before_loop,
-            perform_teardown_after_loop=perform_teardown_after_loop,
-        )
+    def start(self) -> None:
+        if not isinstance(self._fatal_error_reporter, queue.Queue):
+            raise BadQueueTypeError(
+                f"_fatal_error_reporter must be a queue.Queue if starting this thread, not {type(self._fatal_error_reporter)}"
+            )
+        super().start()

@@ -98,3 +98,7 @@ class QueueStillEmptyError(Exception):
 
 class ParallelFrameworkStillNotStoppedError(Exception):
     pass
+
+
+class BadQueueTypeError(Exception):
+    pass

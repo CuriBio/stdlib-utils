@@ -16,6 +16,7 @@ from .constants import NANOSECONDS_PER_CENTIMILLISECOND
 from .constants import QUEUE_CHECK_TIMEOUT_SECONDS
 from .constants import SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE
 from .constants import UnionOfThreadingAndMultiprocessingQueue
+from .exceptions import BadQueueTypeError
 from .exceptions import BlankAbsoluteResourcePathError
 from .exceptions import Crc32ChecksumValidationFailureError
 from .exceptions import Crc32InFileHeadDoesNotMatchExpectedValueError
@@ -121,4 +122,5 @@ __all__ = [
     "QUEUE_CHECK_TIMEOUT_SECONDS",
     "NANOSECONDS_PER_CENTIMILLISECOND",
     "TestingQueue",
+    "BadQueueTypeError",
 ]
