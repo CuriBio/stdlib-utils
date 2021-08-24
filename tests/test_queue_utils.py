@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+from collections import deque
 import multiprocessing
 import queue
+from queue import Empty
 from queue import Queue
 import sys
 import time
@@ -21,6 +23,7 @@ from stdlib_utils import QueueStillEmptyError
 from stdlib_utils import safe_get
 from stdlib_utils import SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE
 from stdlib_utils import SimpleMultiprocessingQueue
+from stdlib_utils import TestingQueue
 
 # Eli (10/23/20): had to drop support for MacOS because they don't adequately support Multiprocessing queues yet
 #     def qsize(self):
@@ -565,3 +568,76 @@ def test_confirm_queue_is_eventually_empty__passes_args_to_is_queue_eventually_o
     mocked_is_queue_eventually_of_size.assert_called_once_with(
         test_queue, 0, timeout_seconds=expected_timeout
     )
+
+
+def test_TestingQueue__is_a_deque(mocker):
+    assert isinstance(TestingQueue(), deque) is True
+
+
+def test_TestingQueue_put__calls_append_on_self_and_excepts_kwargs_of_normal_queue_put_method(
+    mocker,
+):
+    tq = TestingQueue()
+    mocked_append = mocker.spy(tq, "append")
+
+    expected_item = "item"
+    tq.put(expected_item, block=None, timeout=None)
+    mocked_append.assert_called_once_with(expected_item)
+
+
+def test_TestingQueue_put_nowait__calls_append_on_self(mocker):
+    tq = TestingQueue()
+    mocked_append = mocker.spy(tq, "append")
+
+    expected_item = 100
+    tq.put_nowait(expected_item)
+    mocked_append.assert_called_once_with(expected_item)
+
+
+def test_TestingQueue_get__calls_popleft_on_self_and_excepts_kwargs_of_normal_queue_put_method(
+    mocker,
+):
+    tq = TestingQueue()
+    mocked_popleft = mocker.spy(tq, "popleft")
+
+    expected_item = {"test": "item"}
+    tq.append(expected_item)
+    tq.popleft()
+    mocked_popleft.assert_called_once_with()
+
+
+def test_TestingQueue_get__raises_error_if_queue_is_empty():
+    with pytest.raises(Empty):
+        TestingQueue().get()
+
+
+def test_TestingQueue_get_nowait__calls_append_on_self(mocker):
+    tq = TestingQueue()
+    mocked_popleft = mocker.spy(tq, "popleft")
+
+    expected_item = ""
+    tq.put(expected_item)
+    tq.append(expected_item)
+    tq.popleft()
+    mocked_popleft.assert_called_once_with()
+
+
+def test_TestingQueue_get_nowait__raises_error_if_queue_is_empty():
+    with pytest.raises(Empty):
+        TestingQueue().get_nowait()
+
+
+def test_TestingQueue_qsize__returns_length_of_self():
+    tq = TestingQueue()
+    tq.put(1)
+    tq.put(2)
+    assert len(tq) == tq.qsize()
+
+
+def test_TestingQueue_empty__returns_correct_values():
+    tq = TestingQueue()
+    assert tq.empty() is True
+    tq.put(1)
+    assert tq.empty() is False
+    tq.get()
+    assert tq.empty() is True

@@ -2,14 +2,17 @@
 import logging
 import multiprocessing
 from multiprocessing import Process
+import queue
 import time
 
 import pytest
+from stdlib_utils import BadQueueTypeError
 from stdlib_utils import InfiniteLoopingParallelismMixIn
 from stdlib_utils import InfiniteProcess
 from stdlib_utils import invoke_process_run_and_check_errors
 from stdlib_utils import SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE
 from stdlib_utils import SimpleMultiprocessingQueue
+from stdlib_utils import TestingQueue
 
 from .fixtures_parallelism import InfiniteProcessThatCannotBeSoftStopped
 from .fixtures_parallelism import InfiniteProcessThatCountsIterations
@@ -284,3 +287,21 @@ def test_InfiniteProcess__pause_and_resume_work_while_running():
 
     assert len(items_in_queue_at_stop) > 0
     assert items_in_queue_at_stop[0] - 1 == last_item_in_queue_at_pause
+
+
+def test_InfiniteProcess_start__raises_error_if_error_queue_is_incorrect_queue_type():
+    error_queue1 = TestingQueue()
+    p1 = InfiniteProcess(error_queue1)
+    with pytest.raises(
+        BadQueueTypeError,
+        match=f"_fatal_error_reporter must be a SimpleMultiprocessingQueue or multiprocessing.queues.Queue if starting this process, not {type(error_queue1)}",
+    ):
+        p1.start()
+
+    error_queue2 = queue.Queue()
+    p2 = InfiniteProcess(error_queue2)
+    with pytest.raises(
+        BadQueueTypeError,
+        match=f"_fatal_error_reporter must be a SimpleMultiprocessingQueue or multiprocessing.queues.Queue if starting this process, not {type(error_queue2)}",
+    ):
+        p2.start()

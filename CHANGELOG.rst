@@ -2,6 +2,12 @@ Changelog for stdlib_utils
 ==========================
 
 
+0.4.5 (2021-08-24)
+------------------
+
+- Added ``TestingQueue`` for help with tests that don't need a full multiprocessing/threading queue.
+
+
 0.4.4 (2021-04-01)
 ------------------
 

@@ -5,9 +5,11 @@ import threading
 import time
 
 import pytest
+from stdlib_utils import BadQueueTypeError
 from stdlib_utils import get_formatted_stack_trace
 from stdlib_utils import InfiniteLoopingParallelismMixIn
 from stdlib_utils import InfiniteThread
+from stdlib_utils import TestingQueue
 
 from .fixtures_parallelism import InfiniteThreadThatCannotBeSoftStopped
 from .fixtures_parallelism import InfiniteThreadThatCountsIterations
@@ -193,3 +195,13 @@ def test_InfiniteThread__pause_and_resume_work_while_running():
 
     value_after_stop = test_dict["value"]
     assert value_after_stop > value_at_pause
+
+
+def test_InfiniteThread_start__raises_error_if_error_queue_is_incorrect_queue_type():
+    error_queue = TestingQueue()
+    t = InfiniteThread(error_queue)
+    with pytest.raises(
+        BadQueueTypeError,
+        match=f"_fatal_error_reporter must be a queue.Queue if starting this thread, not {type(error_queue)}",
+    ):
+        t.start()

@@ -21,6 +21,7 @@ from .multiprocessing_utils import InfiniteProcess
 from .parallelism_framework import InfiniteLoopingParallelismMixIn
 from .queue_utils import is_queue_eventually_not_empty
 from .queue_utils import SimpleMultiprocessingQueue
+from .queue_utils import TestingQueue
 from .threading_utils import InfiniteThread
 
 
@@ -98,7 +99,7 @@ def invoke_process_run_and_check_errors(
 
     error_queue = the_process.get_fatal_error_reporter()
     is_item_in_queue = not error_queue.empty()
-    if not isinstance(error_queue, SimpleMultiprocessingQueue):
+    if not isinstance(error_queue, (SimpleMultiprocessingQueue, TestingQueue)):
         is_item_in_queue = is_queue_eventually_not_empty(error_queue)
     if is_item_in_queue:
         err_info = the_process.get_fatal_error_reporter().get_nowait()
