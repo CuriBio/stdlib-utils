@@ -22,6 +22,7 @@ from .misc import get_formatted_stack_trace
 from .misc import print_exception
 from .queue_utils import is_queue_eventually_not_empty
 from .queue_utils import SimpleMultiprocessingQueue
+from .queue_utils import TestingQueue
 
 
 def calculate_iteration_time_ns(start_timepoint_of_iteration: int) -> int:
@@ -52,6 +53,7 @@ class InfiniteLoopingParallelismMixIn:
             queue.Queue[str],
             multiprocessing.queues.Queue[Tuple[Exception, str]],
             SimpleMultiprocessingQueue,
+            TestingQueue,
         ],
         logging_level: int,
         stop_event: Union[threading.Event, multiprocessing.synchronize.Event],
@@ -162,6 +164,7 @@ class InfiniteLoopingParallelismMixIn:
         queue.Queue[str],
         multiprocessing.queues.Queue[Tuple[Exception, str]],
         SimpleMultiprocessingQueue,
+        TestingQueue,
     ]:
         return self._fatal_error_reporter
 
@@ -330,7 +333,7 @@ class InfiniteLoopingParallelismMixIn:
 
         error_queue = self.get_fatal_error_reporter()
         error_items = list()
-        if isinstance(error_queue, SimpleMultiprocessingQueue):
+        if isinstance(error_queue, (SimpleMultiprocessingQueue, TestingQueue)):
             while not error_queue.empty():
                 error_items.append(error_queue.get_nowait())
         else:
