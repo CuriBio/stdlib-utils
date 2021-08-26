@@ -6,6 +6,8 @@ import inspect
 import os
 import sys
 import traceback
+from typing import Any
+from typing import Dict
 from typing import Optional
 from typing import Union
 from uuid import UUID
@@ -112,3 +114,11 @@ def print_exception(the_exception: Exception, call_id: Union[UUID, str]) -> None
     stack_trace = get_formatted_stack_trace(the_exception)
     msg = f"{print_warning_msg}\nID of call to print: {call_id}\n{stack_trace}"
     print(msg)  # allow-print
+
+
+def sort_nested_dict(dict_to_sort: Dict[Any, Any]) -> Dict[Any, Any]:
+    dict_to_sort = dict(sorted(dict_to_sort.items()))
+    for key, value in dict_to_sort.items():
+        if isinstance(value, dict):
+            dict_to_sort[key] = sort_nested_dict(value)
+    return dict_to_sort
