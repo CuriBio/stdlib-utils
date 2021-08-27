@@ -41,6 +41,7 @@ from .misc import is_frozen_as_exe
 from .misc import is_system_windows
 from .misc import print_exception
 from .misc import resource_path
+from .misc import sort_nested_dict
 from .multiprocessing_utils import InfiniteProcess
 from .parallelism_framework import InfiniteLoopingParallelismMixIn
 from .parallelism_utils import confirm_parallelism_is_stopped
@@ -123,4 +124,5 @@ __all__ = [
     "NANOSECONDS_PER_CENTIMILLISECOND",
     "TestingQueue",
     "BadQueueTypeError",
+    "sort_nested_dict",
 ]

@@ -13,6 +13,7 @@ from stdlib_utils import is_system_windows
 from stdlib_utils import misc
 from stdlib_utils import print_exception
 from stdlib_utils import resource_path
+from stdlib_utils import sort_nested_dict
 
 PATH_OF_CURRENT_FILE = os.path.dirname((inspect.stack()[0][1]))
 
@@ -181,3 +182,19 @@ def test_get_current_file_abs_directory():
     # the actual beginning of the absolute path could vary system to system...so just make sure there is something in front of the known portion of the path
     minimum_length = len(expected_to_contain) + 1
     assert len(actual) > minimum_length
+
+
+def test_sort_nested_dict__returns_correct_dict():
+    test_dict = {
+        2: {"A": 7, "Z": 0, "V": None},
+        3: True,
+        1: bytes(2),
+    }
+    actual = sort_nested_dict(test_dict)
+
+    expected_outer_keys = [1, 2, 3]
+    for i, outer_key in enumerate(list(actual.keys())):
+        assert outer_key == expected_outer_keys[i]
+    expected_inner_keys = ["A", "V", "Z"]
+    for i, inner_key in enumerate(list(actual[2].keys())):
+        assert inner_key == expected_inner_keys[i]
