@@ -133,6 +133,30 @@ def test_configure_logging__with_path_to_log_folder_and_file_name__uses_path_as_
         file_handler.close()
 
 
+def test_configure_logging__sets_formatter_on_all_handlers_if_given(mocker):
+    class TestFormatter(logging.Formatter):
+        pass
+
+    test_formatter = TestFormatter()
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        spied_basic_config = mocker.patch.object(logging, "basicConfig")
+        configure_logging(
+            log_file_prefix="my_log",
+            path_to_log_folder=tmp_dir,
+            logging_formatter=test_formatter,
+        )
+        assert spied_basic_config.call_count == 1
+
+        actual_handlers = spied_basic_config.call_args_list[0][1]["handlers"]
+        assert len(actual_handlers) == 2
+        for i, handler in enumerate(actual_handlers):
+            assert isinstance(handler.formatter, TestFormatter), i
+
+        # Tanner (8/7/20): windows raises error if file is not closed
+        file_handler = actual_handlers[1]
+        file_handler.close()
+
+
 def test_configure_logging__raises_error_if_path_to_folder_does_not_exist(mocker):
     test_folder = "fake_folder"
     with pytest.raises(LogFolderDoesNotExistError, match=test_folder):
