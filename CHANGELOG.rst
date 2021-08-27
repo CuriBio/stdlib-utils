@@ -2,6 +2,13 @@ Changelog for stdlib_utils
 ==========================
 
 
+0.4.6 (2021-08-27)
+------------------
+
+- Added ``sort_nested_dict``.
+- Updated ``configure_logging`` to allow setting custom formatters on logging handlers.
+
+
 0.4.5 (2021-08-24)
 ------------------
 
