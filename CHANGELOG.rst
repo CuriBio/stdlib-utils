@@ -1,6 +1,11 @@
 Changelog for stdlib_utils
 ==========================
 
+0.4.7 (2021-09-10)
+------------------
+
+- Updated ``configure_logging`` to only use ``stdout`` if ``path_to_log_folder`` is not given.
+
 
 0.4.6 (2021-08-27)
 ------------------

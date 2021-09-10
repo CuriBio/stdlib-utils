@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+import sys
 import tempfile
 import time
 from unittest.mock import ANY
@@ -10,13 +11,12 @@ import pytest
 from stdlib_utils import configure_logging
 from stdlib_utils import LogFolderDoesNotExistError
 from stdlib_utils import LogFolderGivenWithoutFilePrefixError
-from stdlib_utils import loggers
-from stdlib_utils import misc
 from stdlib_utils import UnrecognizedLoggingFormatError
 
 
-def test_configure_logging__default_args(mocker):
+def test_configure_logging__default_args_sets_up_logging_on_stdout(mocker):
     spied_basic_config = mocker.spy(logging, "basicConfig")
+    spied_stream_handler = mocker.spy(logging, "StreamHandler")
     configure_logging()
 
     assert (
@@ -24,6 +24,7 @@ def test_configure_logging__default_args(mocker):
         == time.gmtime  # pylint: disable=comparison-with-callable
     )
 
+    spied_stream_handler.assert_called_once_with(sys.stdout)
     assert spied_basic_config.call_count == 1
     _, kwargs = spied_basic_config.call_args_list[0]
     assert set(kwargs.keys()) == set(["level", "format", "handlers"])
@@ -82,50 +83,23 @@ def test_configure_logging__sets_log_level_to_provided_arg(mocker):
     )
 
 
-@freeze_time("2020-02-10 13:17:22")
-def test_configure_logging__with_file_name__creates_dir_using_resource_path(mocker):
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        mocker.patch.object(misc, "is_frozen_as_exe", autospec=True, return_value=True)
-        mocker.patch.object(
-            misc, "get_path_to_frozen_bundle", autospec=True, return_value=tmp_dir
-        )
-        spied_create_dir = mocker.spy(loggers, "create_directory_if_not_exists")
-        spied_resource_path = mocker.spy(loggers, "resource_path")
-        spied_basic_config = mocker.patch.object(logging, "basicConfig")
-        configure_logging(log_file_prefix="my_log")
-
-        spied_resource_path.assert_called_once_with("logs", base_path=os.getcwd())
-        spied_create_dir.assert_called_once_with(os.path.join(tmp_dir, "logs"))
-
-        assert spied_basic_config.call_count == 1
-        _, kwargs = spied_basic_config.call_args_list[0]
-        assert set(kwargs.keys()) == set(["level", "format", "handlers"])
-
-        actual_handlers = kwargs["handlers"]
-        assert len(actual_handlers) == 2
-        file_handler = actual_handlers[1]
-        assert file_handler.baseFilename == os.path.join(
-            tmp_dir, "logs", "my_log__2020_02_10_131722.txt"
-        )
-        # Tanner (8/7/20): windows raises error if file is not closed
-        file_handler.close()
-
-
 @freeze_time("2020-07-15 10:35:08")
-def test_configure_logging__with_path_to_log_folder_and_file_name__uses_path_as_logging_folder(
+def test_configure_logging__with_path_to_log_folder_and_file_name__uses_path_as_logging_folder__and_does_not_use_stdout(
     mocker,
 ):
     with tempfile.TemporaryDirectory() as tmp_dir:
-        spied_basic_config = mocker.patch.object(logging, "basicConfig")
+        mocked_basic_config = mocker.patch.object(logging, "basicConfig")
         configure_logging(log_file_prefix="my_log", path_to_log_folder=tmp_dir)
 
-        assert spied_basic_config.call_count == 1
-        _, kwargs = spied_basic_config.call_args_list[0]
+        # spied_stream_handler.assert_not_called()
+        assert mocked_basic_config.call_count == 1
+        _, kwargs = mocked_basic_config.call_args_list[0]
         assert set(kwargs.keys()) == set(["level", "format", "handlers"])
 
         actual_handlers = kwargs["handlers"]
-        assert len(actual_handlers) == 2
-        file_handler = actual_handlers[1]
+        assert len(actual_handlers) == 1
+        file_handler = actual_handlers[0]
+        assert isinstance(file_handler, logging.FileHandler) is True
         assert file_handler.baseFilename == os.path.join(
             tmp_dir, "my_log__2020_07_15_103508.txt"
         )
@@ -148,12 +122,12 @@ def test_configure_logging__sets_formatter_on_all_handlers_if_given(mocker):
         assert spied_basic_config.call_count == 1
 
         actual_handlers = spied_basic_config.call_args_list[0][1]["handlers"]
-        assert len(actual_handlers) == 2
+        assert len(actual_handlers) > 0
         for i, handler in enumerate(actual_handlers):
             assert isinstance(handler.formatter, TestFormatter), i
 
         # Tanner (8/7/20): windows raises error if file is not closed
-        file_handler = actual_handlers[1]
+        file_handler = actual_handlers[0]
         file_handler.close()
 
 
