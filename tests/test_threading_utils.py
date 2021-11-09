@@ -117,9 +117,7 @@ def test_InfiniteThread__queue_is_populated_with_error_occuring_during_run__and_
     t = InfiniteThreadThatRaisesError(error_queue)
 
     spied_stop = mocker.spy(t, "stop")
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     t.run()
     assert error_queue.empty() is False
     assert spied_stop.call_count == 1
@@ -135,9 +133,7 @@ def test_InfiniteThread__queue_is_populated_with_error_occuring_during_live_spaw
     expected_error = ValueError("test message")
     error_queue = queue.Queue()
     t = InfiniteThreadThatRaisesError(error_queue)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     t.start()
     t.join()
     assert error_queue.empty() is False

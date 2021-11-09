@@ -28,9 +28,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 def pytest_collection_modifyitems(config: Config, items: List[Function]) -> None:
     if not config.getoption("--full-ci"):
-        skip_ci_only = pytest.mark.skip(
-            reason="these tests are skipped unless --full-ci option is set"
-        )
+        skip_ci_only = pytest.mark.skip(reason="these tests are skipped unless --full-ci option is set")
         for item in items:
             if "only_run_in_ci" in item.keywords:
                 item.add_marker(skip_ci_only)

@@ -16,9 +16,7 @@ def _convert_crc32_bytes_to_hex(checksum_bytes: bytes) -> str:
     return ("%08X" % (checksum_int & 0xFFFFFFFF)).lower()
 
 
-def compute_crc32_bytes_of_large_file(
-    file_handle: IO[bytes], skip_first_n_bytes: int = 0
-) -> bytes:
+def compute_crc32_bytes_of_large_file(file_handle: IO[bytes], skip_first_n_bytes: int = 0) -> bytes:
     """Calculate the CRC32 checksum in a memory-efficient manner.
 
     Modified from: https://stackoverflow.com/questions/1742866/compute-crc-of-file-in-python
@@ -41,13 +39,9 @@ def compute_crc32_bytes_of_large_file(
     return struct.pack(">I", checksum)
 
 
-def compute_crc32_hex_of_large_file(
-    file_handle: IO[bytes], skip_first_n_bytes: int = 0
-) -> str:
+def compute_crc32_hex_of_large_file(file_handle: IO[bytes], skip_first_n_bytes: int = 0) -> str:
     """Calcuates the lowercase zero-padded hex string of a file."""
-    checksum_bytes = compute_crc32_bytes_of_large_file(
-        file_handle, skip_first_n_bytes=skip_first_n_bytes
-    )
+    checksum_bytes = compute_crc32_bytes_of_large_file(file_handle, skip_first_n_bytes=skip_first_n_bytes)
     return _convert_crc32_bytes_to_hex(checksum_bytes)
 
 
@@ -61,16 +55,12 @@ def compute_crc32_and_write_to_file_head(  # pylint: disable=invalid-name # Eli 
     Args:
         file_handle: the file should be opened in 'rb+' mode
     """
-    checksum_bytes = compute_crc32_bytes_of_large_file(
-        file_handle, skip_first_n_bytes=4
-    )
+    checksum_bytes = compute_crc32_bytes_of_large_file(file_handle, skip_first_n_bytes=4)
     file_handle.seek(0)
     file_handle.write(checksum_bytes)
 
 
-def validate_file_head_crc32(
-    file_handle: IO[bytes], expected_checksum: Optional[str] = None
-) -> None:
+def validate_file_head_crc32(file_handle: IO[bytes], expected_checksum: Optional[str] = None) -> None:
     """Validate a file where the CRC32 checksum is contained in the head.
 
     This is often used to facilitate encoding a CRC32 checksum in the Userblock of an H5 file.

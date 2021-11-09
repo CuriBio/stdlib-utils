@@ -34,9 +34,7 @@ def test_resource_path__returns_from_supplied_base_path_when_provided():
 def test_resource_path__returns_from_path_of_meipass_when_frozen(mocker):
     mocker.patch.object(misc, "is_frozen_as_exe", autospec=True, return_value=True)
     expected_base = os.path.join("root_dir", "sub_dir")
-    mocker.patch.object(
-        misc, "get_path_to_frozen_bundle", autospec=True, return_value=expected_base
-    )
+    mocker.patch.object(misc, "get_path_to_frozen_bundle", autospec=True, return_value=expected_base)
     actual_path = resource_path("my_file3")
     expected_path = os.path.join(expected_base, "my_file3")
     assert actual_path == expected_path
@@ -47,9 +45,7 @@ def test_resource_path__returns_from_path_of_meipass_when_frozen_even_when_base_
 ):
     mocker.patch.object(misc, "is_frozen_as_exe", autospec=True, return_value=True)
     expected_base = os.path.join("root_dir2", "sub_dir88")
-    mocker.patch.object(
-        misc, "get_path_to_frozen_bundle", autospec=True, return_value=expected_base
-    )
+    mocker.patch.object(misc, "get_path_to_frozen_bundle", autospec=True, return_value=expected_base)
     actual_path = resource_path("my_file4", base_path="somethingcrazy")
     expected_path = os.path.join(expected_base, "my_file4")
     assert actual_path == expected_path

@@ -58,12 +58,8 @@ class InfiniteLoopingParallelismMixIn:
         logging_level: int,
         stop_event: Union[threading.Event, multiprocessing.synchronize.Event],
         soft_stop_event: Union[threading.Event, multiprocessing.synchronize.Event],
-        teardown_complete_event: Union[
-            threading.Event, multiprocessing.synchronize.Event
-        ],
-        start_up_complete_event: Union[
-            threading.Event, multiprocessing.synchronize.Event
-        ],
+        teardown_complete_event: Union[threading.Event, multiprocessing.synchronize.Event],
+        start_up_complete_event: Union[threading.Event, multiprocessing.synchronize.Event],
         pause_event: Union[threading.Event, multiprocessing.synchronize.Event],
         minimum_iteration_duration_seconds: Union[float, int] = 0.01,
     ) -> None:
@@ -96,22 +92,15 @@ class InfiniteLoopingParallelismMixIn:
         return self._start_timepoint_of_last_performance_measurement
 
     def get_elapsed_time_since_last_performance_measurement(self) -> int:
-        return (
-            time.perf_counter_ns()
-            - self._start_timepoint_of_last_performance_measurement
-        )
+        return time.perf_counter_ns() - self._start_timepoint_of_last_performance_measurement
 
     def reset_performance_tracker(self) -> Dict[str, Any]:
         """Reset performance tracking and return various metrics."""
         out_dict: Dict[str, Any] = {}
-        out_dict[
-            "start_timepoint_of_measurements"
-        ] = self._start_timepoint_of_last_performance_measurement
+        out_dict["start_timepoint_of_measurements"] = self._start_timepoint_of_last_performance_measurement
         out_dict["idle_iteration_time_ns"] = self._idle_iteration_time_ns
         out_dict["percent_use"] = 100 * (
-            1
-            - self._idle_iteration_time_ns
-            / self.get_elapsed_time_since_last_performance_measurement()
+            1 - self._idle_iteration_time_ns / self.get_elapsed_time_since_last_performance_measurement()
         )
         out_dict["longest_iterations"] = self._longest_iterations
         self._percent_use_values.append(out_dict["percent_use"])
@@ -126,9 +115,7 @@ class InfiniteLoopingParallelismMixIn:
             "max": max(self._percent_use_values),
             "min": min(self._percent_use_values),
             "stdev": round(stdev(self._percent_use_values), 6),
-            "mean": round(
-                sum(self._percent_use_values) / len(self._percent_use_values), 6
-            ),
+            "mean": round(sum(self._percent_use_values) / len(self._percent_use_values), 6),
         }
         return metrics
 
@@ -151,9 +138,7 @@ class InfiniteLoopingParallelismMixIn:
     def log_and_raise_error_from_reporter(error_info: Exception) -> None:
         err = error_info
         if not isinstance(err, Exception):
-            raise NotImplementedError(
-                "Error in the code, this should always be an Exception."
-            )
+            raise NotImplementedError("Error in the code, this should always be an Exception.")
         formatted_traceback = get_formatted_stack_trace(err)
         logging.exception(formatted_traceback)
         raise err
@@ -252,9 +237,7 @@ class InfiniteLoopingParallelismMixIn:
                 print_exception(e, "bd9a8587-e79b-43cb-8ffe-0bf45740599d")
                 self._report_fatal_error(e)
 
-    def _sleep_for_idle_time_during_iteration(
-        self, start_timepoint_of_iteration: int
-    ) -> None:
+    def _sleep_for_idle_time_during_iteration(self, start_timepoint_of_iteration: int) -> None:
         iteration_time_ns = calculate_iteration_time_ns(start_timepoint_of_iteration)
 
         longest_iterations = self._longest_iterations
@@ -263,14 +246,9 @@ class InfiniteLoopingParallelismMixIn:
         else:
             min_longest_iteration = min(longest_iterations)
             if iteration_time_ns > min_longest_iteration:
-                longest_iterations[
-                    longest_iterations.index(min_longest_iteration)
-                ] = iteration_time_ns
+                longest_iterations[longest_iterations.index(min_longest_iteration)] = iteration_time_ns
 
-        idle_time_ns = (
-            int(self.get_minimum_iteration_duration_seconds() * 10 ** 9)
-            - iteration_time_ns
-        )
+        idle_time_ns = int(self.get_minimum_iteration_duration_seconds() * 10 ** 9) - iteration_time_ns
         if idle_time_ns > 0:
             self._idle_iteration_time_ns += idle_time_ns
             time.sleep(idle_time_ns / 10 ** 9)
@@ -288,9 +266,7 @@ class InfiniteLoopingParallelismMixIn:
         called.
         """
         if not hasattr(self, "_stop_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _stop_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _stop_event attribute.")
         stop_event = getattr(self, "_stop_event")
 
         stop_event.set()
@@ -304,9 +280,7 @@ class InfiniteLoopingParallelismMixIn:
         It's the responsibility of _teardown_after_loop and parent process to make sure all queues get emptied before join is called.
         """
         if not hasattr(self, "_soft_stop_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _soft_stop_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _soft_stop_event attribute.")
         soft_stop_event = getattr(self, "_soft_stop_event")
 
         soft_stop_event.set()
@@ -363,36 +337,26 @@ class InfiniteLoopingParallelismMixIn:
 
         is_set = start_up_complete_event.is_set()
         if not isinstance(is_set, bool):
-            raise NotImplementedError(
-                "The return value from this should always be a bool."
-            )
+            raise NotImplementedError("The return value from this should always be a bool.")
         return is_set
 
     def is_stopped(self) -> bool:
         """Check if the parallel instance is stopped."""
         if not hasattr(self, "_stop_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _stop_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _stop_event attribute.")
         stop_event = getattr(self, "_stop_event")
 
         is_set = stop_event.is_set()
         if not isinstance(is_set, bool):
-            raise NotImplementedError(
-                "The return value from this should always be a bool."
-            )
+            raise NotImplementedError("The return value from this should always be a bool.")
         return is_set
 
     def is_preparing_for_soft_stop(self) -> bool:
         """Check if the parallel instance is preparing to soft stop."""
         if not hasattr(self, "_soft_stop_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _soft_stop_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _soft_stop_event attribute.")
         soft_stop_event = getattr(self, "_soft_stop_event")
-        if not isinstance(
-            soft_stop_event, (threading.Event, multiprocessing.synchronize.Event)
-        ):
+        if not isinstance(soft_stop_event, (threading.Event, multiprocessing.synchronize.Event)):
             raise NotImplementedError(
                 "Classes using this mixin must have a _soft_stop_event as either a threading.Event or multiprocessing.Event"
             )
@@ -420,9 +384,7 @@ class InfiniteLoopingParallelismMixIn:
         This is typically useful during integration testing scenarios.
         """
         if not hasattr(self, "_pause_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _pause_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _pause_event attribute.")
         pause_event = getattr(self, "_pause_event")
 
         pause_event.set()
@@ -433,9 +395,7 @@ class InfiniteLoopingParallelismMixIn:
         This is typically useful during integration testing scenarios.
         """
         if not hasattr(self, "_pause_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _pause_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _pause_event attribute.")
         pause_event = getattr(self, "_pause_event")
 
         pause_event.clear()
@@ -443,13 +403,9 @@ class InfiniteLoopingParallelismMixIn:
     def is_paused(self) -> bool:
         """Check if framework is paused."""
         if not hasattr(self, "_pause_event"):
-            raise NotImplementedError(
-                "Classes using this mixin must have a _pause_event attribute."
-            )
+            raise NotImplementedError("Classes using this mixin must have a _pause_event attribute.")
         pause_event = getattr(self, "_pause_event")
-        if not isinstance(
-            pause_event, (threading.Event, multiprocessing.synchronize.Event)
-        ):
+        if not isinstance(pause_event, (threading.Event, multiprocessing.synchronize.Event)):
             raise NotImplementedError(
                 "Classes using this mixin must have a _pause_event as either a threading.Event or multiprocessing.Event"
             )
