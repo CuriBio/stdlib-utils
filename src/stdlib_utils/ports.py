@@ -46,9 +46,7 @@ def _confirm_port_availability(
             )
 
 
-def confirm_port_available(
-    port: int, host: str = "127.0.0.1", timeout: Union[float, int] = 0
-) -> None:
+def confirm_port_available(port: int, host: str = "127.0.0.1", timeout: Union[float, int] = 0) -> None:
     """Raise error if port unavailable after timeout.
 
     Args:
@@ -59,9 +57,7 @@ def confirm_port_available(
     _confirm_port_availability(True, port, host=host, timeout=timeout)
 
 
-def confirm_port_in_use(
-    port: int, host: str = "127.0.0.1", timeout: Union[float, int] = 0
-) -> None:
+def confirm_port_in_use(port: int, host: str = "127.0.0.1", timeout: Union[float, int] = 0) -> None:
     """Raise error if port is still open/unused after timeout.
 
     Args:

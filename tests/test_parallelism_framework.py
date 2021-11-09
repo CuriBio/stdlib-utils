@@ -55,9 +55,7 @@ def test_InfiniteLoopingParallelismMixIn__sleeps_during_loop_for_time_remaining_
     )
     mocked_sleep = mocker.patch.object(time, "sleep", autospec=True)
     generic_infinite_looper().run(num_iterations=2, perform_setup_before_loop=True)
-    expected_time_to_sleep_seconds = round(
-        0.01 - mocked_length_of_time_to_execute_ns / 10 ** 9, 10
-    )
+    expected_time_to_sleep_seconds = round(0.01 - mocked_length_of_time_to_execute_ns / 10 ** 9, 10)
     mocked_sleep.assert_called_once_with(expected_time_to_sleep_seconds)
 
 
@@ -93,18 +91,13 @@ def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__initially_r
 
     actual_first_return = p.reset_performance_tracker()
     assert "start_timepoint_of_measurements" in actual_first_return
-    assert (
-        actual_first_return["start_timepoint_of_measurements"] == expected_first_return
-    )
+    assert actual_first_return["start_timepoint_of_measurements"] == expected_first_return
     assert "idle_iteration_time_ns" in actual_first_return
     assert actual_first_return["idle_iteration_time_ns"] == 0
 
     actual_second_return = p.reset_performance_tracker()
     assert "start_timepoint_of_measurements" in actual_second_return
-    assert (
-        actual_second_return["start_timepoint_of_measurements"]
-        == expected_second_return
-    )
+    assert actual_second_return["start_timepoint_of_measurements"] == expected_second_return
 
 
 def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_idle_time(
@@ -126,9 +119,7 @@ def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_idl
     performance_metrics = p.reset_performance_tracker()
     total_idle_time = performance_metrics["idle_iteration_time_ns"]
     allowed_time_per_iter_ns = 10 * 10 ** 6
-    expected_idle_time = (
-        allowed_time_per_iter_ns * 2 - dur_of_first_iter_ns - dur_of_second_iter_ns
-    )
+    expected_idle_time = allowed_time_per_iter_ns * 2 - dur_of_first_iter_ns - dur_of_second_iter_ns
     assert total_idle_time == expected_idle_time
 
 
@@ -138,9 +129,7 @@ def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_and
     p = generic_infinite_looper()
     percent_use_values = p.get_percent_use_values()
 
-    spied_elapsed_time = mocker.spy(
-        p, "get_elapsed_time_since_last_performance_measurement"
-    )
+    spied_elapsed_time = mocker.spy(p, "get_elapsed_time_since_last_performance_measurement")
 
     p.run(num_iterations=3)
     idle_time_secs = p.get_idle_time_ns()
@@ -196,9 +185,7 @@ def test_InfiniteLoopingParallelismMixIn__hard_stop__waits_for_teardown_complete
         assert is_queue_eventually_not_empty(error_queue) is True
         return True
 
-    mocker.patch.object(
-        p, "is_teardown_complete", autospec=True, side_effect=side_effect
-    )
+    mocker.patch.object(p, "is_teardown_complete", autospec=True, side_effect=side_effect)
 
     actual = p.hard_stop()
     assert actual["fatal_error_reporter"] == [expected_error]
@@ -218,9 +205,7 @@ def test_InfiniteLoopingParallelismMixIn__hard_stop__waits_for_teardown_complete
         assert is_queue_eventually_not_empty(error_queue) is True
         return True
 
-    mocked_complete = mocker.patch.object(
-        p, "is_teardown_complete", autospec=True, side_effect=side_effect
-    )
+    mocked_complete = mocker.patch.object(p, "is_teardown_complete", autospec=True, side_effect=side_effect)
 
     actual = p.hard_stop()
     assert actual["fatal_error_reporter"] == [expected_error]
@@ -242,9 +227,7 @@ def test_InfiniteLoopingParallelismMixIn__hard_stop__timeout_overrides_waiting_f
         assert is_queue_eventually_not_empty(error_queue) is True
         return False
 
-    mocked_complete = mocker.patch.object(
-        p, "is_teardown_complete", autospec=True, side_effect=side_effect
-    )
+    mocked_complete = mocker.patch.object(p, "is_teardown_complete", autospec=True, side_effect=side_effect)
     error_queue.put(expected_error)
 
     actual = p.hard_stop(timeout=0.2)
@@ -289,9 +272,7 @@ def test_InfiniteLoopingParallelismMixIn__get_percent_use_metrics__returns_corre
     assert actual["max"] == max(expected_percent_use_vals)
     assert actual["min"] == min(expected_percent_use_vals)
     assert actual["stdev"] == round(stdev(expected_percent_use_vals), 6)
-    assert actual["mean"] == round(
-        sum(expected_percent_use_vals) / len(expected_percent_use_vals), 6
-    )
+    assert actual["mean"] == round(sum(expected_percent_use_vals) / len(expected_percent_use_vals), 6)
 
 
 def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_longest_iterations(
@@ -356,7 +337,5 @@ def test_InfiniteLoopingParallelismMixIn__correctly_stores_time_since_initialize
 
     invoke_process_run_and_check_errors(p, perform_setup_before_loop=True)
     # after setup
-    expected_dur_since_init = (
-        expected_poll_time - expected_init_time
-    ) // NANOSECONDS_PER_CENTIMILLISECOND
+    expected_dur_since_init = (expected_poll_time - expected_init_time) // NANOSECONDS_PER_CENTIMILLISECOND
     assert p.get_cms_since_init() == expected_dur_since_init

@@ -22,9 +22,7 @@ def test_confirm_port_available__raises_error_if_port_unavailable_immediately(mo
 
 
 def test_confirm_port_available__passes_correct_args_to_is_port_in_use(mocker):
-    mocked_in_use = mocker.patch.object(
-        ports, "is_port_in_use", autospec=True, return_value=False
-    )
+    mocked_in_use = mocker.patch.object(ports, "is_port_in_use", autospec=True, return_value=False)
     confirm_port_available(7765, host="testhost")
     mocked_in_use.assert_called_once_with(7765, host="testhost")
 
@@ -47,9 +45,7 @@ def test_confirm_port_in_use__raises_error_if_port_not_in_use_immediately(mocker
 
 
 def test_confirm_port_in_use__passes_correct_args_to_is_port_in_use(mocker):
-    mocked_in_use = mocker.patch.object(
-        ports, "is_port_in_use", autospec=True, return_value=True
-    )
+    mocked_in_use = mocker.patch.object(ports, "is_port_in_use", autospec=True, return_value=True)
     confirm_port_in_use(7766, host="testhost2")
     mocked_in_use.assert_called_once_with(7766, host="testhost2")
 

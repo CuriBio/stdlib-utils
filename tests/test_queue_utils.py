@@ -133,9 +133,7 @@ def test_is_queue_eventually_of_size__given_populated_queue__when_caled_with_one
 def test_is_queue_eventually_of_size__given_empty_queue_that_has_qsize_mocked__when_called_with_1__returns_true_after_several_calls(
     test_queue, test_description, mocker
 ):
-    mocked_qsize = mocker.patch.object(
-        test_queue, "qsize", autospec=True, side_effect=[0, 0, 0, 1]
-    )
+    mocked_qsize = mocker.patch.object(test_queue, "qsize", autospec=True, side_effect=[0, 0, 0, 1])
     assert is_queue_eventually_of_size(test_queue, 1) is True
     assert mocked_qsize.call_count == 4
 
@@ -194,9 +192,7 @@ def test_is_queue_eventually_empty__returns_false_with_not_empty_threading_queue
     q = queue.Queue()
     mocked_empty = mocker.patch.object(q, "empty", autospec=True, return_value=False)
     assert (
-        is_queue_eventually_empty(
-            q, timeout_seconds=SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE * 6
-        )
+        is_queue_eventually_empty(q, timeout_seconds=SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE * 6)
         is False
     )
     assert mocked_empty.call_count > 5
@@ -229,9 +225,7 @@ def test_is_queue_eventually_empty__returns_true_after_multiple_attempts_with_ev
     mocker,
 ):
     q = queue.Queue()
-    mocked_empty = mocker.patch.object(
-        q, "empty", autospec=True, side_effect=[False, False, False, True]
-    )
+    mocked_empty = mocker.patch.object(q, "empty", autospec=True, side_effect=[False, False, False, True])
     assert is_queue_eventually_empty(q) is True
     assert mocked_empty.call_count == 4
 
@@ -260,9 +254,7 @@ def test_is_queue_eventually_not_empty__returns_false_with_empty_threading_queue
     q = queue.Queue()
     spied_empty = mocker.spy(q, "empty")
     assert (
-        is_queue_eventually_not_empty(
-            q, timeout_seconds=SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE * 3
-        )
+        is_queue_eventually_not_empty(q, timeout_seconds=SECONDS_TO_SLEEP_BETWEEN_CHECKING_QUEUE_SIZE * 3)
         is False
     )
     assert spied_empty.call_count > 2
@@ -293,9 +285,7 @@ def test_is_queue_eventually_not_empty__returns_true_after_multiple_attempts_wit
     mocker,
 ):
     q = queue.Queue()
-    mocked_empty = mocker.patch.object(
-        q, "empty", autospec=True, side_effect=[True, True, True, False]
-    )
+    mocked_empty = mocker.patch.object(q, "empty", autospec=True, side_effect=[True, True, True, False])
     assert is_queue_eventually_not_empty(q) is True
     assert mocked_empty.call_count == 4
 
@@ -378,9 +368,7 @@ def test_put_object_into_queue_and_raise_error_if_eventually_still_empty__passes
     expected = 2.2
     q = Queue()
     spied_not_empty = mocker.spy(queue_utils, "is_queue_eventually_not_empty")
-    put_object_into_queue_and_raise_error_if_eventually_still_empty(
-        "bill", q, timeout_seconds=expected
-    )
+    put_object_into_queue_and_raise_error_if_eventually_still_empty("bill", q, timeout_seconds=expected)
     spied_not_empty.assert_called_once_with(q, timeout_seconds=expected)
 
 
@@ -401,9 +389,7 @@ def test_confirm_queue_is_eventually_of_size__passes_args_to_is_queue_eventually
     )  # mocking instead of spying so that code coverage can still happen on MacOS which doesn't support queue.qsize
     expected_size = 3
     expected_timeout = 0.07
-    confirm_queue_is_eventually_of_size(
-        test_queue, expected_size, timeout_seconds=expected_timeout
-    )
+    confirm_queue_is_eventually_of_size(test_queue, expected_size, timeout_seconds=expected_timeout)
     mocked_is_queue_eventually_of_size.assert_called_once_with(
         test_queue, expected_size, timeout_seconds=expected_timeout
     )
@@ -428,9 +414,7 @@ def test_confirm_queue_is_eventually_of_size__returns_without_error_if_queue_is_
     expected_size = 0
     expected_timeout = 0.07
     assert (
-        confirm_queue_is_eventually_of_size(
-            test_queue, expected_size, timeout_seconds=expected_timeout
-        )
+        confirm_queue_is_eventually_of_size(test_queue, expected_size, timeout_seconds=expected_timeout)
         is None
     )
 
@@ -451,9 +435,7 @@ def test_confirm_queue_is_eventually_of_size__raises_error_if_queue_is_not_expec
         QueueNotExpectedSizeError,
         match=f"expected to contain {expected_size} objects but actually contained 0 objects",
     ):
-        confirm_queue_is_eventually_of_size(
-            test_queue, expected_size, timeout_seconds=0.01
-        )
+        confirm_queue_is_eventually_of_size(test_queue, expected_size, timeout_seconds=0.01)
 
 
 @skip_on_mac
@@ -474,9 +456,7 @@ def test_confirm_queue_is_eventually_of_size__raises_error_if_queue_is_not_expec
         QueueNotExpectedSizeError,
         match=f"expected to contain {expected_size} objects but actually contained 1 objects",
     ):
-        confirm_queue_is_eventually_of_size(
-            test_queue, expected_size, timeout_seconds=0.01
-        )
+        confirm_queue_is_eventually_of_size(test_queue, expected_size, timeout_seconds=0.01)
 
 
 @pytest.mark.parametrize(
@@ -498,9 +478,7 @@ def test_confirm_queue_is_eventually_of_size__given_qsize_is_mocked__then_raises
         QueueNotExpectedSizeError,
         match=f"expected to contain {expected_size} objects but actually contained 0 objects",
     ):
-        confirm_queue_is_eventually_of_size(
-            test_queue, expected_size, timeout_seconds=0.01
-        )
+        confirm_queue_is_eventually_of_size(test_queue, expected_size, timeout_seconds=0.01)
 
 
 @skip_on_mac
@@ -574,6 +552,18 @@ def test_TestingQueue__is_a_deque(mocker):
     assert isinstance(TestingQueue(), deque) is True
 
 
+def test_TestingQueue__raises_TypeError_if_indexed():
+    tq = TestingQueue()
+    tq.put(1)
+    with pytest.raises(TypeError, match="'TestingQueue' object is not subscriptable"):
+        tq[0]  # pylint: disable=pointless-statement  # Tanner (11/9/21): indexing will raise error
+
+
+def test_TestingQueue__raises_TypeError_if_passed_to_len():
+    with pytest.raises(TypeError, match="object of type 'TestingQueue' has no len()"):
+        len(TestingQueue())
+
+
 def test_TestingQueue_put__calls_append_on_self_and_excepts_kwargs_of_normal_queue_put_method(
     mocker,
 ):
@@ -627,11 +617,11 @@ def test_TestingQueue_get_nowait__raises_error_if_queue_is_empty():
         TestingQueue().get_nowait()
 
 
-def test_TestingQueue_qsize__returns_length_of_self():
+def test_TestingQueue_qsize__returns_correct_value():
     tq = TestingQueue()
     tq.put(1)
     tq.put(2)
-    assert len(tq) == tq.qsize()
+    assert tq.qsize() == 2
 
 
 def test_TestingQueue_empty__returns_correct_values():

@@ -54,9 +54,7 @@ class InfiniteProcess(InfiniteLoopingParallelismMixIn, Process):
     def _report_fatal_error(self, the_err: Exception) -> None:
         formatted_stack_trace = get_formatted_stack_trace(the_err)
         if isinstance(self._fatal_error_reporter, queue.Queue):
-            raise NotImplementedError(
-                "The error reporter for InfiniteProcess cannot be a threading queue"
-            )
+            raise NotImplementedError("The error reporter for InfiniteProcess cannot be a threading queue")
         self._fatal_error_reporter.put_nowait((the_err, formatted_stack_trace))
 
     def start(self) -> None:

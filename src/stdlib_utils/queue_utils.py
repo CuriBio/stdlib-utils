@@ -195,6 +195,16 @@ class TestingQueue(deque):  # type: ignore[type-arg]
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
+    # Override deque dunder methods so they are not accidentally used
+
+    def __getitem__(self, i):  # type: ignore
+        raise TypeError("'TestingQueue' object is not subscriptable")
+
+    def __len__(self):  # type: ignore
+        raise TypeError("object of type 'TestingQueue' has no len()")
+
+    # Queue methods
+
     def put(self, item: Any, block: bool = False, timeout: int = 0) -> None:
         # pylint: disable=unused-argument  # Tanner (8/23/21): This is intentional to make this compatible with code expecting real queues
         self.append(item)
@@ -212,7 +222,7 @@ class TestingQueue(deque):  # type: ignore[type-arg]
         return self.popleft()
 
     def qsize(self) -> int:
-        return len(self)
+        return super().__len__()
 
     def empty(self) -> bool:
         return self.qsize() == 0

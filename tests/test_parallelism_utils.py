@@ -35,9 +35,7 @@ def test_invoke_process_run_and_check_errors__pauses_long_enough_to_process_stan
 ):
     error_queue = multiprocessing.Queue()
     p = InfiniteProcessThatRaisesError(error_queue)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     with pytest.raises(ValueError, match="test message"):
         invoke_process_run_and_check_errors(p)
 
@@ -48,9 +46,7 @@ def test_invoke_process_run_and_check_errors__raises_and_logs_error_for_Infinite
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatRaisesError(error_queue)
     mocked_log = mocker.patch.object(logging, "exception", autospec=True)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     with pytest.raises(ValueError, match="test message"):
         invoke_process_run_and_check_errors(p)
     assert error_queue.empty() is True  # the error should have been popped off the queu
@@ -72,9 +68,7 @@ def test_invoke_process_run_and_check_errors__does_not_run_setup_or_teardown_by_
 def test_invoke_process_run_and_check_errors__runs_setup_with_given_kwarg():
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatTracksSetup(error_queue)
-    invoke_process_run_and_check_errors(  # runs once by default
-        p, perform_setup_before_loop=True
-    )
+    invoke_process_run_and_check_errors(p, perform_setup_before_loop=True)  # runs once by default
     assert p.get_num_iterations() == 1
     assert p.is_setup() is True
 
@@ -82,9 +76,7 @@ def test_invoke_process_run_and_check_errors__runs_setup_with_given_kwarg():
 def test_invoke_process_run_and_check_errors__runs_teardown_with_given_kwarg():
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatTracksSetup(error_queue)
-    invoke_process_run_and_check_errors(  # runs once by default
-        p, perform_teardown_after_loop=True
-    )
+    invoke_process_run_and_check_errors(p, perform_teardown_after_loop=True)  # runs once by default
     assert p.get_num_iterations() == 1
     assert p.is_teardown_complete() is True
 
@@ -95,14 +87,10 @@ def test_invoke_process_run_and_check_errors__raises_and_logs_error_for_Infinite
     error_queue = queue.Queue()
     p = InfiniteThreadThatRaisesError(error_queue)
     mocked_log = mocker.patch.object(logging, "exception", autospec=True)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     with pytest.raises(ValueError, match="test message"):
         invoke_process_run_and_check_errors(p)
-    assert (
-        error_queue.empty() is True
-    )  # the error should have been popped off the queue
+    assert error_queue.empty() is True  # the error should have been popped off the queue
     assert mocked_log.call_count == 1
 
 
@@ -136,9 +124,7 @@ def test_put_log_message_into_queue__does_not_put_message_in_when_below_threshol
 def test_put_log_message_into_queue__sleeps_after_putting_message_into_regular_queue(
     mocker,
 ):
-    spied_is_queue_eventually_not_empty = mocker.spy(
-        parallelism_utils, "is_queue_eventually_not_empty"
-    )
+    spied_is_queue_eventually_not_empty = mocker.spy(parallelism_utils, "is_queue_eventually_not_empty")
     q = queue.Queue()
     msg = "hey there"
     put_log_message_into_queue(
@@ -203,9 +189,7 @@ def test_confirm_parallelism_is_stopped__does_not_wait_if_framework_already_stop
 def test_confirm_parallelism_is_stopped__raises_error_if_not_stopped(
     test_framework, test_description, mocker
 ):
-    mocker.patch.object(
-        parallelism_utils, "sleep", autospec=True
-    )  # patch sleep to speed up test
+    mocker.patch.object(parallelism_utils, "sleep", autospec=True)  # patch sleep to speed up test
     with pytest.raises(ParallelFrameworkStillNotStoppedError):
         confirm_parallelism_is_stopped(test_framework)
 
@@ -223,9 +207,7 @@ def test_confirm_parallelism_is_stopped__raises_error_if_not_stopped_after_timeo
     mocked_sleep = mocker.patch.object(
         parallelism_utils, "sleep", autospec=True
     )  # patch sleep to speed up test
-    mocker.patch.object(
-        parallelism_utils, "perf_counter", autospec=True, side_effect=[0, 1, 2, 12]
-    )
+    mocker.patch.object(parallelism_utils, "perf_counter", autospec=True, side_effect=[0, 1, 2, 12])
     with pytest.raises(ParallelFrameworkStillNotStoppedError):
         confirm_parallelism_is_stopped(test_framework, timeout_seconds=10)
 
@@ -245,9 +227,7 @@ def test_confirm_parallelism_is_stopped__successfully_returns_if_framework_becom
     mocked_sleep = mocker.patch.object(
         parallelism_utils, "sleep", autospec=True
     )  # patch sleep to speed up test
-    mocker.patch.object(
-        test_framework, "is_stopped", autospec=True, side_effect=[False, False, True]
-    )
+    mocker.patch.object(test_framework, "is_stopped", autospec=True, side_effect=[False, False, True])
     confirm_parallelism_is_stopped(test_framework, timeout_seconds=10)
 
     assert mocked_sleep.call_count == 2  # confirm that it did sleep in between checking
