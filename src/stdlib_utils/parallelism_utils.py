@@ -105,18 +105,12 @@ def invoke_process_run_and_check_errors(
         err_info = the_process.get_fatal_error_reporter().get_nowait()
         if isinstance(the_process, InfiniteProcess):
             if not isinstance(err_info, tuple):
-                raise NotImplementedError(
-                    "Errors from InfiniteProcess must be Tuple[Exception,str]"
-                )
+                raise NotImplementedError("Errors from InfiniteProcess must be Tuple[Exception,str]")
             excp, trace = err_info
             if not isinstance(excp, Exception):
-                raise NotImplementedError(
-                    "Errors from InfiniteProcess must be Tuple[Exception,str]"
-                )
+                raise NotImplementedError("Errors from InfiniteProcess must be Tuple[Exception,str]")
             if not isinstance(trace, str):
-                raise NotImplementedError(
-                    "Errors from InfiniteProcess must be Tuple[Exception,str]"
-                )
+                raise NotImplementedError("Errors from InfiniteProcess must be Tuple[Exception,str]")
             InfiniteProcess.log_and_raise_error_from_reporter((excp, trace))
         if not isinstance(err_info, Exception):
 

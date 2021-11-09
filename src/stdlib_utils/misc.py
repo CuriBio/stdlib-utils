@@ -47,9 +47,7 @@ def get_path_to_frozen_bundle() -> str:  # pragma: no cover
     """
     path_to_bundle = getattr(sys, "_MEIPASS")
     if not isinstance(path_to_bundle, str):
-        raise NotImplementedError(
-            "The _MEIPASS sys attribute should always be a string."
-        )
+        raise NotImplementedError("The _MEIPASS sys attribute should always be a string.")
     return path_to_bundle
 
 
@@ -101,9 +99,7 @@ def create_directory_if_not_exists(the_dir: str) -> None:
 
 def get_formatted_stack_trace(e: Exception) -> str:
     # format the stack trace (Eli 2/7/20 couldn't figure out a way to get the stack trace from the exception itself once it had passed back into the main process, so need to grab it explicitly here) https://stackoverflow.com/questions/4564559/get-exception-description-and-stack-trace-which-caused-an-exception-all-as-a-st
-    stack = traceback.extract_stack()[:-3] + traceback.extract_tb(
-        e.__traceback__
-    )  # add limit=??
+    stack = traceback.extract_stack()[:-3] + traceback.extract_tb(e.__traceback__)  # add limit=??
     pretty = traceback.format_list(stack)
     formatted_stack_trace = "".join(pretty) + "\n  {} {}".format(e.__class__, e)
     return formatted_stack_trace

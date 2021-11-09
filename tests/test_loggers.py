@@ -30,16 +30,13 @@ def test_configure_logging__default_args_sets_up_logging_on_stdout(mocker):
     assert set(kwargs.keys()) == set(["level", "format", "handlers"])
     assert kwargs["level"] == logging.INFO
     assert (
-        kwargs["format"]
-        == "[%(asctime)s UTC] %(name)s-{%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
+        kwargs["format"] == "[%(asctime)s UTC] %(name)s-{%(filename)s:%(lineno)d} %(levelname)s - %(message)s"
     )
     actual_handlers = kwargs["handlers"]
     assert len(actual_handlers) == 1
 
     # if pytest is automatically capturing stdout, then it does some adjustments to change the output, so the second or clause is needed
-    assert actual_handlers[
-        0
-    ].stream.name == "<stdout>" or "_pytest.capture.EncodedFile" in str(
+    assert actual_handlers[0].stream.name == "<stdout>" or "_pytest.capture.EncodedFile" in str(
         type(actual_handlers[0].stream)
     )
 
@@ -62,9 +59,7 @@ def test_configure_logging__with_notebook_format(mocker):
     assert len(actual_handlers) == 1
 
     # if pytest is automatically capturing stdout, then it does some adjustments to change the output, so the second or clause is needed
-    assert actual_handlers[
-        0
-    ].stream.name == "<stdout>" or "_pytest.capture.EncodedFile" in str(
+    assert actual_handlers[0].stream.name == "<stdout>" or "_pytest.capture.EncodedFile" in str(
         type(actual_handlers[0].stream)
     )
 
@@ -78,9 +73,7 @@ def test_configure_logging__raises_error_with_unrecognized_logging_format():
 def test_configure_logging__sets_log_level_to_provided_arg(mocker):
     spied_basic_config = mocker.spy(logging, "basicConfig")
     configure_logging(log_level=logging.DEBUG)
-    spied_basic_config.assert_called_once_with(
-        level=logging.DEBUG, format=ANY, handlers=ANY
-    )
+    spied_basic_config.assert_called_once_with(level=logging.DEBUG, format=ANY, handlers=ANY)
 
 
 @freeze_time("2020-07-15 10:35:08")
@@ -100,9 +93,7 @@ def test_configure_logging__with_path_to_log_folder_and_file_name__uses_path_as_
         assert len(actual_handlers) == 1
         file_handler = actual_handlers[0]
         assert isinstance(file_handler, logging.FileHandler) is True
-        assert file_handler.baseFilename == os.path.join(
-            tmp_dir, "my_log__2020_07_15_103508.txt"
-        )
+        assert file_handler.baseFilename == os.path.join(tmp_dir, "my_log__2020_07_15_103508.txt")
         # Tanner (8/7/20): windows raises error if file is not closed
         file_handler.close()
 

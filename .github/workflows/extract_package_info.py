@@ -17,9 +17,7 @@ PATH_OF_CURRENT_FILE = os.path.dirname((inspect.stack()[0][1]))
 
 
 def _extract_info(regex: Pattern[str]) -> str:
-    with open(
-        os.path.join(PATH_OF_CURRENT_FILE, os.pardir, os.pardir, "setup.py"), "r"
-    ) as in_file:
+    with open(os.path.join(PATH_OF_CURRENT_FILE, os.pardir, os.pardir, "setup.py"), "r") as in_file:
         content = in_file.read()
         match = re.search(regex, content)
         if match is None:

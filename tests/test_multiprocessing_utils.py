@@ -144,9 +144,7 @@ def test_InfiniteProcess__queue_is_populated_with_error_occuring_during_run__and
     expected_error = ValueError("test message")
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatRaisesError(error_queue)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     spied_stop = mocker.spy(p, "stop")
 
     p.run()
@@ -164,9 +162,7 @@ def test_InfiniteProcess__queue_is_populated_with_error_occuring_during_live_spa
     # spied_print_exception = mocker.spy(
     #     parallelism_framework, "print_exception"
     # )  # Eli (3/13/20) can't figure out why this isn't working (call count never gets to 1), so just asserting about print instead
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     expected_error = ValueError("test message")
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatRaisesError(error_queue)
@@ -208,9 +204,7 @@ def test_InfiniteProcess__catches_error_in_setup_before_loop_and_does_not_run_it
     expected_error = ValueError("error during setup")
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatRaisesErrorInSetup(error_queue)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     p.run(num_iterations=1)
     assert error_queue.empty() is False
     actual_error, _ = error_queue.get_nowait()
@@ -232,9 +226,7 @@ def test_InfiniteProcess__catches_error_in_teardown_after_loop(mocker):
     expected_error = ValueError("error during teardown")
     error_queue = SimpleMultiprocessingQueue()
     p = InfiniteProcessThatRaisesErrorInTeardown(error_queue)
-    mocker.patch(
-        "builtins.print", autospec=True
-    )  # don't print the error message to stdout
+    mocker.patch("builtins.print", autospec=True)  # don't print the error message to stdout
     p.run(num_iterations=1)
     assert error_queue.empty() is False
     actual_error, _ = error_queue.get_nowait()
@@ -270,9 +262,7 @@ def test_InfiniteProcess__pause_and_resume_work_while_running():
     assert test_queue.empty() is True
 
     p.resume()
-    time.sleep(
-        seconds_to_sleep_while_queue_populating
-    )  # give the queue time to populate
+    time.sleep(seconds_to_sleep_while_queue_populating)  # give the queue time to populate
     hard_stop_results = p.hard_stop()
     p.join()
 

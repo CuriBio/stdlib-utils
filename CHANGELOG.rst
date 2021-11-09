@@ -1,6 +1,14 @@
 Changelog for stdlib_utils
 ==========================
 
+
+0.4.8 (2021-11-09)
+------------------
+
+- Updated ``TestingQueue`` so that ``len()`` and indexing raise a ``TypeError``
+  like a real queue.
+
+
 0.4.7 (2021-09-10)
 ------------------
 

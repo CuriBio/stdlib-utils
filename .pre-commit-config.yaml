@@ -34,6 +34,7 @@ repos:
     rev: 20.8b1  # pick a git hash / tag to point to
     hooks:
     -   id: black
+        args: [--line-length=110]
 
 -   repo: https://github.com/myint/docformatter
     # black seems to be working on formatting docstrings, but use this for now
