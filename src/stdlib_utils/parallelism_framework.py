@@ -14,6 +14,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
 from typing import Union
 
@@ -23,6 +24,15 @@ from .misc import print_exception
 from .queue_utils import is_queue_eventually_not_empty
 from .queue_utils import SimpleMultiprocessingQueue
 from .queue_utils import TestingQueue
+
+
+def create_metrics_stats(metric_values: Sequence[Union[int, float]]) -> Dict[str, Union[int, float]]:
+    return {
+        "max": max(metric_values),
+        "min": min(metric_values),
+        "stdev": round(stdev(metric_values), 6),
+        "mean": round(sum(metric_values) / len(metric_values), 6),
+    }
 
 
 def calculate_iteration_time_ns(start_timepoint_of_iteration: int) -> int:
@@ -73,15 +83,20 @@ class InfiniteLoopingParallelismMixIn:
         self._process_can_be_soft_stopped = True
         self._logging_level = logging_level
         self._minimum_iteration_duration_seconds = minimum_iteration_duration_seconds
+        self._start_time_of_last_iteration: Optional[int] = None
+        self._periods_between_iterations: List[int] = list()
         self._idle_iteration_time_ns = 0
         self._percent_use_values: List[float] = list()
         self._longest_iterations: List[int] = list()
+        self._sleep_durations: List[float] = list()
 
     def _init_performance_measurements(self) -> None:
         # separate to make mocking easier
         self._reset_performance_measurements()
 
     def _reset_performance_measurements(self) -> None:
+        self._periods_between_iterations = list()
+        self._sleep_durations = list()
         self._start_timepoint_of_last_performance_measurement = time.perf_counter_ns()
         self._idle_iteration_time_ns = 0
 
@@ -103,6 +118,10 @@ class InfiniteLoopingParallelismMixIn:
             1 - self._idle_iteration_time_ns / self.get_elapsed_time_since_last_performance_measurement()
         )
         out_dict["longest_iterations"] = self._longest_iterations
+        if len(self._periods_between_iterations) > 1:
+            out_dict["periods_between_iterations"] = create_metrics_stats(self._periods_between_iterations)
+        if len(self._sleep_durations) > 1:
+            out_dict["sleep_durations"] = create_metrics_stats(self._sleep_durations)
         self._percent_use_values.append(out_dict["percent_use"])
         self._reset_performance_measurements()
         return out_dict
@@ -111,13 +130,7 @@ class InfiniteLoopingParallelismMixIn:
         return self._percent_use_values
 
     def get_percent_use_metrics(self) -> Dict[str, float]:
-        metrics = {
-            "max": max(self._percent_use_values),
-            "min": min(self._percent_use_values),
-            "stdev": round(stdev(self._percent_use_values), 6),
-            "mean": round(sum(self._percent_use_values) / len(self._percent_use_values), 6),
-        }
-        return metrics
+        return create_metrics_stats(self._percent_use_values)
 
     def get_idle_time_ns(self) -> float:
         return self._idle_iteration_time_ns
@@ -211,6 +224,12 @@ class InfiniteLoopingParallelismMixIn:
         self._start_up_complete_event.set()
         while True:
             start_timepoint_of_iteration = time.perf_counter_ns()
+            if self._start_time_of_last_iteration is not None:
+                self._periods_between_iterations.append(
+                    start_timepoint_of_iteration - self._start_time_of_last_iteration
+                )
+            self._start_time_of_last_iteration = start_timepoint_of_iteration
+
             self._process_can_be_soft_stopped = True
             if not self._pause_event.is_set():
                 try:
@@ -251,7 +270,9 @@ class InfiniteLoopingParallelismMixIn:
         idle_time_ns = int(self.get_minimum_iteration_duration_seconds() * 10 ** 9) - iteration_time_ns
         if idle_time_ns > 0:
             self._idle_iteration_time_ns += idle_time_ns
-            time.sleep(idle_time_ns / 10 ** 9)
+            sleep_dur = idle_time_ns / 10 ** 9
+            self._sleep_durations.append(sleep_dur)
+            time.sleep(sleep_dur)
 
     def _commands_for_each_run_iteration(self) -> None:
         """Execute additional commands inside the run loop."""
