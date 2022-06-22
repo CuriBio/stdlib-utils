@@ -46,7 +46,7 @@ def simple_infinite_looper():
 def test_InfiniteLoopingParallelismMixIn__sleeps_during_loop_for_time_remaining_if_minimum_iteration_duration_not_met(
     mocker,
 ):
-    mocked_length_of_time_to_execute_ns = 10 ** 6
+    mocked_length_of_time_to_execute_ns = 10**6
     mocker.patch.object(
         time,
         "perf_counter_ns",
@@ -55,7 +55,7 @@ def test_InfiniteLoopingParallelismMixIn__sleeps_during_loop_for_time_remaining_
     )
     mocked_sleep = mocker.patch.object(time, "sleep", autospec=True)
     generic_infinite_looper().run(num_iterations=2, perform_setup_before_loop=True)
-    expected_time_to_sleep_seconds = round(0.01 - mocked_length_of_time_to_execute_ns / 10 ** 9, 10)
+    expected_time_to_sleep_seconds = round(0.01 - mocked_length_of_time_to_execute_ns / 10**9, 10)
     mocked_sleep.assert_called_once_with(expected_time_to_sleep_seconds)
 
 
@@ -67,7 +67,7 @@ def test_InfiniteLoopingParallelismMixIn__does_not_sleep_during_loop_if_minimum_
         time,
         "perf_counter_ns",
         autospec=True,
-        side_effect=[0, 0, 0, 0.1 * 10 ** 9, 0],
+        side_effect=[0, 0, 0, 0.1 * 10**9, 0],
     )
     mocked_sleep = mocker.patch.object(time, "sleep", autospec=True)
     generic_infinite_looper().run(num_iterations=2, perform_setup_before_loop=True)
@@ -104,8 +104,8 @@ def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_idl
     mocker,
 ):
     p = generic_infinite_looper()
-    dur_of_first_iter_ns = 2 * 10 ** 6
-    dur_of_second_iter_ns = 1 * 10 ** 6
+    dur_of_first_iter_ns = 2 * 10**6
+    dur_of_second_iter_ns = 1 * 10**6
     mocker.patch.object(
         parallelism_framework,
         "calculate_iteration_time_ns",
@@ -118,7 +118,7 @@ def test_InfiniteLoopingParallelismMixIn__reset_performance_tracker__returns_idl
 
     performance_metrics = p.reset_performance_tracker()
     total_idle_time = performance_metrics["idle_iteration_time_ns"]
-    allowed_time_per_iter_ns = 10 * 10 ** 6
+    allowed_time_per_iter_ns = 10 * 10**6
     expected_idle_time = allowed_time_per_iter_ns * 2 - dur_of_first_iter_ns - dur_of_second_iter_ns
     assert total_idle_time == expected_idle_time
 

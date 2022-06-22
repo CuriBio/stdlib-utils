@@ -2,6 +2,12 @@ Changelog for stdlib_utils
 ==========================
 
 
+0.5.0 (2022-06-22)
+------------------
+
+- Added more metrics to InfiniteLoopingParallelismMixIn.
+
+
 0.4.8 (2021-11-09)
 ------------------
 
