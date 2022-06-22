@@ -25,4 +25,4 @@ def test_type_aliases():
 
 
 def test_conversion_factors():
-    assert NANOSECONDS_PER_CENTIMILLISECOND == 10 ** 4
+    assert NANOSECONDS_PER_CENTIMILLISECOND == 10**4

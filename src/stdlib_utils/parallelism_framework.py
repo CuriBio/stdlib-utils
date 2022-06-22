@@ -267,10 +267,10 @@ class InfiniteLoopingParallelismMixIn:
             if iteration_time_ns > min_longest_iteration:
                 longest_iterations[longest_iterations.index(min_longest_iteration)] = iteration_time_ns
 
-        idle_time_ns = int(self.get_minimum_iteration_duration_seconds() * 10 ** 9) - iteration_time_ns
+        idle_time_ns = int(self.get_minimum_iteration_duration_seconds() * 10**9) - iteration_time_ns
         if idle_time_ns > 0:
             self._idle_iteration_time_ns += idle_time_ns
-            sleep_dur = idle_time_ns / 10 ** 9
+            sleep_dur = idle_time_ns / 10**9
             self._sleep_durations.append(sleep_dur)
             time.sleep(sleep_dur)
 
