@@ -7,32 +7,21 @@ import multiprocessing
 import multiprocessing.queues
 import multiprocessing.synchronize
 import queue
-from statistics import stdev
 import threading
 import time
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Sequence
 from typing import Tuple
 from typing import Union
 
 from .constants import NANOSECONDS_PER_CENTIMILLISECOND
 from .misc import get_formatted_stack_trace
-from .misc import print_exception
+from .misc import print_exception, create_metrics_stats
 from .queue_utils import is_queue_eventually_not_empty
 from .queue_utils import SimpleMultiprocessingQueue
 from .queue_utils import TestingQueue
-
-
-def create_metrics_stats(metric_values: Sequence[Union[int, float]]) -> Dict[str, Union[int, float]]:
-    return {
-        "max": max(metric_values),
-        "min": min(metric_values),
-        "stdev": round(stdev(metric_values), 6),
-        "mean": round(sum(metric_values) / len(metric_values), 6),
-    }
 
 
 def calculate_iteration_time_ns(start_timepoint_of_iteration: int) -> int:

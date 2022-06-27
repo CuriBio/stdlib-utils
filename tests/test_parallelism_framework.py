@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 import queue
-from statistics import stdev
 import threading
 import time
 
@@ -271,7 +270,6 @@ def test_InfiniteLoopingParallelismMixIn__get_percent_use_metrics__returns_corre
     actual = p.get_percent_use_metrics()
     assert actual["max"] == max(expected_percent_use_vals)
     assert actual["min"] == min(expected_percent_use_vals)
-    assert actual["stdev"] == round(stdev(expected_percent_use_vals), 6)
     assert actual["mean"] == round(sum(expected_percent_use_vals) / len(expected_percent_use_vals), 6)
 
 

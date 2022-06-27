@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name="stdlib_utils",
-    version="0.5.0",
+    version="0.5.1",
     description="Various utility functions and classes using only the Python standard lib",
     url="https://github.com/CuriBio/stdlib-utils",
     author="Curi Bio",
