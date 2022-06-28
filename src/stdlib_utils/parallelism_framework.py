@@ -17,8 +17,9 @@ from typing import Tuple
 from typing import Union
 
 from .constants import NANOSECONDS_PER_CENTIMILLISECOND
+from .misc import create_metrics_stats
 from .misc import get_formatted_stack_trace
-from .misc import print_exception, create_metrics_stats
+from .misc import print_exception
 from .queue_utils import is_queue_eventually_not_empty
 from .queue_utils import SimpleMultiprocessingQueue
 from .queue_utils import TestingQueue

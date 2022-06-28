@@ -33,11 +33,12 @@ from .exceptions import QueueStillEmptyError
 from .exceptions import UnrecognizedLoggingFormatError
 from .loggers import configure_logging
 from .misc import create_directory_if_not_exists
+from .misc import create_metrics_stats
 from .misc import get_current_file_abs_directory
 from .misc import get_current_file_abs_path
 from .misc import get_formatted_stack_trace
 from .misc import get_path_to_frozen_bundle
-from .misc import is_frozen_as_exe, create_metrics_stats
+from .misc import is_frozen_as_exe
 from .misc import is_system_windows
 from .misc import print_exception
 from .misc import resource_path
@@ -125,5 +126,5 @@ __all__ = [
     "TestingQueue",
     "BadQueueTypeError",
     "sort_nested_dict",
-    "create_metrics_stats"
+    "create_metrics_stats",
 ]

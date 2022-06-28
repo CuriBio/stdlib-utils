@@ -6,10 +6,12 @@ import tempfile
 import pytest
 from stdlib_utils import BlankAbsoluteResourcePathError
 from stdlib_utils import create_directory_if_not_exists
+from stdlib_utils import create_metrics_stats
 from stdlib_utils import get_current_file_abs_directory
-from stdlib_utils import get_current_file_abs_path, create_metrics_stats
+from stdlib_utils import get_current_file_abs_path
 from stdlib_utils import get_formatted_stack_trace
-from stdlib_utils import is_system_windows, misc
+from stdlib_utils import is_system_windows
+from stdlib_utils import misc
 from stdlib_utils import print_exception
 from stdlib_utils import resource_path
 from stdlib_utils import sort_nested_dict
@@ -196,6 +198,4 @@ def test_sort_nested_dict__returns_correct_dict():
 
 
 def test_create_metrics_stats__returns_correct_metric_keys():
-    assert set(create_metrics_stats(list(range(3))).keys()) == {
-        "max", "min", "mean"
-    }
+    assert set(create_metrics_stats(list(range(3))).keys()) == {"max", "min", "mean"}
