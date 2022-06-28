@@ -9,6 +9,7 @@ import traceback
 from typing import Any
 from typing import Dict
 from typing import Optional
+from typing import Sequence
 from typing import Union
 from uuid import UUID
 
@@ -118,3 +119,11 @@ def sort_nested_dict(dict_to_sort: Dict[Any, Any]) -> Dict[Any, Any]:
         if isinstance(value, dict):
             dict_to_sort[key] = sort_nested_dict(value)
     return dict_to_sort
+
+
+def create_metrics_stats(metric_values: Sequence[Union[int, float]]) -> Dict[str, Union[int, float]]:
+    return {
+        "max": max(metric_values),
+        "min": min(metric_values),
+        "mean": round(sum(metric_values) / len(metric_values), 6),
+    }

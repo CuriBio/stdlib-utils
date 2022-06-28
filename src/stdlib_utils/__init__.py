@@ -33,6 +33,7 @@ from .exceptions import QueueStillEmptyError
 from .exceptions import UnrecognizedLoggingFormatError
 from .loggers import configure_logging
 from .misc import create_directory_if_not_exists
+from .misc import create_metrics_stats
 from .misc import get_current_file_abs_directory
 from .misc import get_current_file_abs_path
 from .misc import get_formatted_stack_trace
@@ -125,4 +126,5 @@ __all__ = [
     "TestingQueue",
     "BadQueueTypeError",
     "sort_nested_dict",
+    "create_metrics_stats",
 ]

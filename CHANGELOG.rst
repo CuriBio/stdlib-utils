@@ -2,6 +2,12 @@ Changelog for stdlib_utils
 ==========================
 
 
+0.5.1 (2022-06-27)
+------------------
+
+- Removed std dev calculation from performance metrics as it takes too long.
+
+
 0.5.0 (2022-06-22)
 ------------------
 
