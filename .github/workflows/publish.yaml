@@ -21,13 +21,9 @@ jobs:
         os:
           - "ubuntu-20.04"
         python-version:
-            - 3.8
-        include:
-          # only enable coverage on the fastest job
-          - os: "ubuntu-20.04"
-            python-version: "3.8"
+            - 3.9
 
-    name: Check workflow before publishing
+    name: Setup before publishing
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -80,6 +76,39 @@ jobs:
       - name: Fail if attempting to publish from a branch other than main
         if: runner.os == 'Linux' && github.event.inputs.publish_to_pypi == '1'
         run: if [ "${{ steps.extract_branch.outputs.sha-of-current-branch}}" = "${{ steps.extract_branch.outputs.sha-of-main-branch}}" ] ; then echo "Running on main branch, can proceed to publish."; else exit 1; fi
+
+      - name: Activate virtual environment (Linux/MacOS)
+        if: runner.os == 'Linux' || runner.os == 'macOS'
+        run: . venv/bin/activate
+
+      - name: Activate virtual environment (Windows)
+        if: runner.os == 'Windows'
+        run: venv\Scripts\Activate.ps1
+
+      - name: Display Pip Version and confirm environment empty
+        run: |
+          pip -V
+          pip freeze
+      - name: Install Dev Dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Install Main Package
+        run: pip install -e .
+      - name: Log full installed packages
+        run: pip freeze
+
+      - name: Run prerelease to check packaging compatibilty
+        run: prerelease --no-input
+
+      - name: Build package for release
+        run: |
+          python setup.py sdist
+          python setup.py bdist_wheel
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist--${{ matrix.os }}--${{ matrix.python-version }}
+          path: dist/*
 
 
   publish_to_test_pypi:
