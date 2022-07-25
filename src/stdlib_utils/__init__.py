@@ -38,6 +38,7 @@ from .misc import get_current_file_abs_directory
 from .misc import get_current_file_abs_path
 from .misc import get_formatted_stack_trace
 from .misc import get_path_to_frozen_bundle
+from .misc import is_cpu_arm
 from .misc import is_frozen_as_exe
 from .misc import is_system_windows
 from .misc import print_exception
@@ -127,4 +128,5 @@ __all__ = [
     "BadQueueTypeError",
     "sort_nested_dict",
     "create_metrics_stats",
+    "is_cpu_arm",
 ]

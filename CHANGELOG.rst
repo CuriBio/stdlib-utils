@@ -2,6 +2,12 @@ Changelog for stdlib_utils
 ==========================
 
 
+0.5.2 (2022-07-25)
+------------------
+
+- Added ``is_cpu_arm``.
+
+
 0.5.1 (2022-06-27)
 ------------------
 
@@ -11,7 +17,7 @@ Changelog for stdlib_utils
 0.5.0 (2022-06-22)
 ------------------
 
-- Added more metrics to InfiniteLoopingParallelismMixIn.
+- Added more metrics to ``InfiniteLoopingParallelismMixIn``.
 
 
 0.4.8 (2021-11-09)

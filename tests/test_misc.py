@@ -10,6 +10,7 @@ from stdlib_utils import create_metrics_stats
 from stdlib_utils import get_current_file_abs_directory
 from stdlib_utils import get_current_file_abs_path
 from stdlib_utils import get_formatted_stack_trace
+from stdlib_utils import is_cpu_arm
 from stdlib_utils import is_system_windows
 from stdlib_utils import misc
 from stdlib_utils import print_exception
@@ -67,56 +68,15 @@ def test_is_system_windows__false_when_linux(mocker):
     assert is_system_windows() is False
 
 
+@pytest.mark.parametrize("platform_name", ["some-x86", "some-arm"])
+def test_is_cpu_arm(platform_name, mocker):
+    mocker.patch.object(misc.platform, "platform", autospec=True, return_value=platform_name)
+
+    assert is_cpu_arm() is ("arm" in platform_name)
+
+
 def dummy_signal_handler(my_list, arg1, arg2):
     my_list[0] = True
-
-
-# def test_raise_alarm_signal__raises_on_linux(mocker):
-#     # Eli (1/9/20) can't really figure out how to mock this very well, so creating a funky call out to a dummy signal handler
-#     mocker.patch.object(misc, "is_system_windows", autospec=True, return_value=False)
-
-#     is_windows = is_system_windows()
-
-#     a_list = [False]
-#     if is_windows:
-#         mocker.patch.object(signal, "setitimer", create=True)
-#         mocker.patch.object(signal, "ITIMER_REAL", create=True)
-#     else:
-#         mocked_setitimer = mocker.spy(signal, "setitimer")
-#         signal.signal(14, functools.partial(dummy_signal_handler, a_list))
-#     raise_alarm_signal()
-#     time.sleep(0.01)
-#     if not is_windows:
-#         # if the system is actually linux, make sure to check the live result
-#         assert a_list[0] is True
-#         # make sure it was done in a linux-compatible way
-#         mocked_setitimer.assert_called_once()
-
-
-# def test_raise_alarm_signal__raises_on_windows(mocker):
-#     is_windows = is_system_windows()
-#     # Eli (1/9/20) can't really figure out how to mock this very well, so creating a funky call out to a dummy signal handler
-#     mocker.patch.object(misc, "is_system_windows", autospec=True, return_value=True)
-#     if is_windows:
-#         c_raise = ctypes.CDLL("ucrtbase")
-#         mocked_c_raise = mocker.patch.object(c_raise, "raise", autospec=True)
-
-#         def side_effect(*args):
-#             return {"raise": mocked_c_raise}
-
-#         mocked_cdll = mocker.patch.object(
-#             ctypes, "CDLL", autospec=True, side_effect=side_effect()
-#         )
-#     else:
-#         mocked_cdll = mocker.patch.object(
-#             ctypes, "CDLL", autospec=True, return_value={"raise": lambda x: None}
-#         )
-#     raise_alarm_signal()
-#     time.sleep(0.01)
-#     if is_windows:
-#         # make sure it was done in a windows-compatible way
-#         mocked_cdll.assert_called_once_with("ucrtbase")
-#         mocked_c_raise.assert_called_once_with(14)
 
 
 def test_create_directory_if_not_exists__when_no_directory_present():
